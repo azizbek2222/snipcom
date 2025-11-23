@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads Income Robot</title>
+
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+
+    <!-- Adexium Ads Script -->
+    <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const adexiumWidget = new AdexiumWidget({
+                wid: '073de845-2e9b-4e86-b29a-44ad597d21b1',
+                adFormat: 'push-like'
+            });
+            adexiumWidget.autoMode();
+        });
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", Arial, sans-serif;
+            background: linear-gradient(135deg, #4f7cff, #6bc1ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            width: 320px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .card h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card p {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .load-btn {
+            padding: 12px 20px;
+            background: white;
+            color: #4f7cff;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .load-btn:hover {
+            background: #dfe9ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Ads Income Robot</h1>
+        <p>Push-like reklama avtomatik ravishda ishga tushadi.</p>
+
+        <button class="load-btn" onclick="showAd()">Reklamani ko‘rish</button>
+    </div>
+
+    <script>
+        function showAd() {
+            const widget = new AdexiumWidget({
+                wid: '073de845-2e9b-4e86-b29a-44ad597d21b1',
+                adFormat: 'push-like'
+            });
+            widget.showAd();
+        }
+    </script>
+
+</body>
+</html>
