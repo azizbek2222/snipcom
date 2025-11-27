@@ -1,129 +1,147 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bepul Tarjimon</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #e5ddd5;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #0088cc;
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      font-size: 15px;
-      resize: none;
-    }
-    select, button {
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      font-size: 15px;
-      margin: 5px 0;
-    }
-    button {
-      background-color: #0088cc;
-      color: white;
-      cursor: pointer;
-      border: none;
-    }
-    button:hover {
-      background-color: #006fa1;
-    }
-    #result {
-      background: #dcf8c6;
-      border-radius: 10px;
-      padding: 12px;
-      min-height: 60px;
-      margin-top: 10px;
-      white-space: pre-wrap;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>STAR MARKET</title>
+
+<!-- Telegram WebApp -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- AdsGram Interstitial -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    padding: 20px;
+}
+input {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 20px;
+    font-size: 17px;
+}
+.music-card {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.btn-download {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 8px 12px;
+    background: #0af;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>🌍 Bepul Tarjimon</h1>
-    <label>Tilni tanlang:</label>
-    <select id="targetLang">
-      <option value="en">Ingliz tili</option>
-      <option value="ru">Rus tili</option>
-      <option value="uz">O'zbek tili</option>
-      <option value="tr">Turk tili</option>
-      <option value="fr">Fransuz tili</option>
-      <option value="de">Nemis tili</option>
-    </select>
-    <textarea id="inputText" placeholder="Tarjima qilinadigan matnni kiriting..."></textarea>
-    <button onclick="translateText()">Tarjima qilish</button>
-    <button onclick="recordVoice()">🎙 Ovozdan matn olish</button>
 
-    <h3>Natija:</h3>
-    <div id="result">Tarjima shu yerda chiqadi...</div>
-  </div>
+<h2>STAR MARKET📥</h2>
 
-  <script>
-    async function translateText() {
-      const text = document.getElementById("inputText").value.trim();
-      const target = document.getElementById("targetLang").value;
-      const resultBox = document.getElementById("result");
-      if (!text) {
-        resultBox.textContent = "Matn kiriting!";
-        return;
-      }
-      resultBox.textContent = "⏳ Tarjima qilinmoqda...";
+<input type="text" id="search" placeholder="ilova nomini yozing...">
 
-      try {
-        const res = await fetch("https://translate.terraprint.co/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            q: text,
-            source: "auto",
-            target: target,
-            format: "text"
-          }),
+<div id="musicList"></div>
+
+<script>
+// === ILOVALAR ROʻYXATI===
+const musics = [
+    {name: "", link: ""},
+    {name: "", link: ""},
+    {name: "Bitunix", link: "https://drive.google.com/file/d/1ey4-ET4Vqvw9wClZftwDZ4h1RFxSFCUS/view?usp=drivesdk"},
+    {name: "HopWeb", link: "https://drive.google.com/file/d/1GUMRvMSOaRGVSY_9ZC_M8NHY-_v84mii/view?usp=drivesdk"},
+    
+];
+
+// === INTERSTITIAL REKLAMA ===
+function showInterstitial() {
+    const AdController = window.Adsgram.init({
+        blockId: "int-18178", // sizning interstitial blockId
+        type: "interstitial"
+    });
+
+    AdController.show().then((result) => {
+        console.log("Interstitial ad finished:", result);
+    }).catch((e) => {
+        console.log("Interstitial error:", e);
+    });
+}
+
+// === AUTOSTART REKLAMA ===
+setTimeout(showInterstitial, 1200); // sahifa ochilgandan 1.2s keyin interstitial
+
+// === MUSIQA CHIQARISH ===
+function renderList(filtered) {
+    let list = document.getElementById("musicList");
+    list.innerHTML = "";
+
+    filtered.forEach(m => {
+        let div = document.createElement("div");
+        div.className = "music-card";
+        div.innerHTML = `
+            ${m.name}<br>
+            <a class="btn-download" href="${m.link}" target="_blank">Yuklab olish ⬇</a>
+        `;
+        list.appendChild(div);
+    });
+
+    // === YUKLAB OLISH TUGMASI BOSILISHI HISOBLASH ===
+    let downloadButtons = document.querySelectorAll(".btn-download");
+    let downloadCount = 0;
+
+    downloadButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            downloadCount++;
+            console.log("Yuklab olish bosildi:", downloadCount);
+
+            if (downloadCount >= 5) {
+                showInterstitial(); // 5-marta bosilganda interstitial reklama
+                downloadCount = 0;
+            }
         });
-        const data = await res.json();
-        resultBox.textContent = data.translatedText || "❌ Tarjima topilmadi.";
-      } catch (e) {
-        resultBox.textContent = "❌ Internet yoki server xatosi!";
-      }
-    }
+    });
+}
 
-    // 🎙 Ovozdan matn olish
-    function recordVoice() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert("Brauzeringiz ovozdan matn olishni qo‘llab-quvvatlamaydi.");
-        return;
-      }
-      const recognition = new SpeechRecognition();
-      recognition.lang = "uz-UZ";
-      recognition.interimResults = false;
-      recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        document.getElementById("inputText").value = text;
-      };
-      recognition.onerror = (e) => alert("Xato: " + e.error);
-      recognition.start();
-    }
-  </script>
+renderList(musics);
+
+// === QIDIRUV + AUTO REKLAMA 5-marta ===
+let searchCount = 0;
+let typingTimer;
+const doneTypingDelay = 1000;
+
+document.getElementById("search").addEventListener("input", function () {
+    clearTimeout(typingTimer);
+    const value = this.value.toLowerCase();
+
+    typingTimer = setTimeout(() => {
+        if (value === "") {
+            renderList(musics);
+            return;
+        }
+
+        const filtered = musics.filter(m => m.name.toLowerCase().includes(value));
+        renderList(filtered);
+
+        searchCount++;
+        console.log("Qidiruv soni:", searchCount);
+
+        if (searchCount >= 5) {
+            showInterstitial(); // interstitial reklama
+            searchCount = 0;
+        }
+    }, doneTypingDelay);
+});
+</script>
+
 </body>
 </html>
