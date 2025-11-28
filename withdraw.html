@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Withdraw</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #4e9fff, #6ac9ff);
+        text-align: center;
+        padding-top: 60px;
+    }
+
+    .box {
+        width: 300px;
+        background: white;
+        padding: 25px;
+        border-radius: 14px;
+        margin: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    input {
+        width: 90%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 12px 28px;
+        background: #00c16e;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(0,200,120,0.4);
+    }
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Withdraw</h2>
+    <input type="text" id="payeer" placeholder="Payeer hisob (P100000)" />
+    <input type="number" id="amount" placeholder="Yechiladigan summa (₽)" />
+
+    <button onclick="sendWithdraw()">Yuborish</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIeG8dVbm0Yk7FR1hPzrBoD7rgDKWAFoY",
+      authDomain: "user1111-c84a0.firebaseapp.com",
+      databaseURL: "https://user1111-c84a0-default-rtdb.firebaseio.com",
+      projectId: "user1111-c84a0",
+      storageBucket: "user1111-c84a0.firebasestorage.app",
+      messagingSenderId: "901723757936",
+      appId: "1:901723757936:web:9da0a1c7ec494f4a0c03b5",
+      measurementId: "G-9R8ZQY63B1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let deviceId = localStorage.getItem("deviceId");
+
+    function sendWithdraw() {
+        let payeer = document.getElementById("payeer").value;
+        let amount = parseFloat(document.getElementById("amount").value);
+
+        if (!payeer.startsWith("P")) {
+            alert("Payeer hisob noto'g'ri!");
+            return;
+        }
+
+        if (amount < 1) {
+            alert("Minimal yechish: 1₽");
+            return;
+        }
+
+        // Avval balansni olamiz
+        get(child(ref(db), "users/" + deviceId + "/balance")).then((snapshot) => {
+            if (!snapshot.exists()) return;
+
+            let balance = snapshot.val();
+
+            if (balance < amount) {
+                alert("Balans yetarli emas!");
+                return;
+            }
+
+            // Balansdan ayiramiz
+            update(ref(db, "users/" + deviceId), {
+                balance: balance - amount
+            });
+
+            // Admin panelga so‘rov yuboramiz
+            const newReq = push(ref(db, "withdraw_requests"));
+            set(newReq, {
+                user: deviceId,
+                payeer: payeer,
+                amount: amount,
+                status: "pending"
+            });
+
+            alert("So‘rov yuborildi!");
+            location.href = "index.html";
+        });
+    }
+</script>
+
+</body>
+</html>
