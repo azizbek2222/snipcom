@@ -127,7 +127,7 @@ function initializeAdsgram() {
             // Agar AdController tayyor bo'lsa ishlatamiz
             if (AdController) {
                 AdController.show().then(() => {
-                    balance += 0.02;
+                    balance += 0.05;
                     document.getElementById("balance").innerText = balance.toFixed(2) + " ₽";
                     lastAdTime = Date.now();
                     remainingTime = TIMER_SECONDS;
