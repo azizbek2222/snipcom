@@ -7,17 +7,22 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase.js"></script>
 <style>
 *{box-sizing:border-box;font-family:Segoe UI,sans-serif}
+/* O'ZGARTIRILDI: run sahifasida hech qanday orqa fon va bo'sh joy qolmasligi uchun */
 body{
   margin:0;
+  padding:0;
   min-height:100vh;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
+  /* Qolgan CSS stillari (fon rang, gradient) o'chirildi */
+  color:#000; /* Matn rangi, agar kod o'z matn rangini belgilamasa */
 }
 /* EDITOR */
 .app{
   max-width:700px;
   margin:auto;
   padding:25px;
+  /* Editorning o'z fonini saqlab qolish uchun qo'shimcha stil, faqat editor ko'rinib turganda ishlaydi */
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); 
+  color:#fff;
 }
 input, textarea{
   width:100%;
@@ -42,8 +47,11 @@ button{
   color:#fff;
 }
 /* RUN PAGE */
+/* O'ZGARTIRILDI: Linkka kirilganda hech qanday padding (bo'sh joy) qolmasligi uchun */
 #runResult{
-  padding:20px;
+  padding:0; 
+  width: 100%;
+  height: 100vh;
 }
 </style>
 </head>
@@ -73,6 +81,12 @@ var params=new URLSearchParams(location.search);
 var runId=params.get("run");
 
 if(runId){
+  // Linkga kirilganda tana (body) stillarini butunlay o'chirish
+  document.body.style.background = 'none';
+  document.body.style.color = 'inherit';
+  document.body.style.minHeight = '0';
+  document.body.style.overflow = 'hidden'; // O'ram qismini olib tashlash
+
   document.getElementById("editor").style.display="none";
   document.getElementById("runResult").style.display="block";
 
@@ -94,15 +108,17 @@ if(runId){
     if (mainFileCode) {
         var iframe = document.createElement("iframe");
         iframe.style.width="100%";
-        iframe.style.height="500px";
-        iframe.style.border="1px solid #fff";
+        // O'ZGARTIRILDI: Kichik oyna emas, butun ekranni egallashi uchun
+        iframe.style.height="100vh"; 
+        iframe.style.border="none"; // Chegarani olib tashlash
         // Faqat topilgan asosiy fayl iframe ichida ochiladi
         iframe.srcdoc = mainFileCode;
         document.getElementById("runResult").appendChild(iframe);
-
-        // Izoh: Qolgan fayllarni (masalan, CSS, JS) yuklash uchun ularni
-        // asosiy HTML kodi ichiga kiritish kerak bo'ladi, chunki 
-        // iframe bitta faylni yuklayapti.
+        
+        // Iframe'ning joylashuvi butun ekranga moslashishi uchun
+        document.getElementById("runResult").style.position = 'fixed';
+        document.getElementById("runResult").style.top = '0';
+        document.getElementById("runResult").style.left = '0';
     }
   });
 }
