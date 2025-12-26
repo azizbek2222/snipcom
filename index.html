@@ -2,8 +2,8 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<title>HTML → GitHub Link</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML → GitHub Link (Telegram ID Auto)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
   body{
     margin:0;
@@ -42,16 +42,6 @@
     color:#fff;
     resize:vertical;
   }
-  input{
-    width:100%;
-    padding:12px;
-    margin-top:12px;
-    border:none;
-    border-radius:10px;
-    font-size:14px;
-    background:rgba(255,255,255,0.05);
-    color:#fff;
-  }
   button{
     width:100%;
     margin-top:15px;
@@ -75,16 +65,13 @@
   }
 </style>
 </head>
-
 <body>
+
 <div class="box">
   <h2>HTML → GitHub Pages link</h2>
 
   <label>HTML kodni shu yerga yoz:</label>
   <textarea id="code" placeholder="Bu yerga HTML kod yoziladi..."></textarea>
-
-  <label>Fayl nomi (masalan: index.html):</label>
-  <input id="filename" placeholder="index.html" />
 
   <button onclick="upload()">Link olish</button>
 
@@ -92,69 +79,79 @@
 </div>
 
 <script>
-const TOKEN = ""; // Tokeningni shu yerga yoz
-const OWNER = "azizbek2222"; // GitHub username
-const REPO = "html-test";    // GitHub repo nomi
+  // GitHub konfiguratsiyasi
+  const TOKEN = "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"; // Tokeningiz
+  const OWNER = "azizbek2222"; // GitHub username
+  const REPO = "html-test";    // GitHub repo nomi
 
-async function upload(){
-  const html = document.getElementById("code").value.trim();
-  const filename = document.getElementById("filename").value.trim();
+  // Telegram mini app orqali foydalanuvchi info
+  // Telegram Web App API orqali Telegram ID olish
+  const telegramUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
-  if(!html){ alert("HTML kodni yozing!"); return; }
-  if(!filename){ alert("Fayl nomini yozing!"); return; }
-
-  const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`;
-
-  // Oldingi fayl bo‘lsa SHA olish
-  let sha = null;
-  const check = await fetch(api, { headers:{Authorization:"token " + TOKEN}});
-  if(check.ok){
-    const j = await check.json();
-    sha = j.sha;
+  if(!telegramUserId){
+    alert("Telegram ID topilmadi. Ilova Telegram ichida ochilishi kerak!");
   }
 
-  // Faylni yaratish yoki update qilish
-  const res = await fetch(api,{
-    method:"PUT",
-    headers:{
-      "Authorization":"token " + TOKEN,
-      "Content-Type":"application/json"
-    },
-    body: JSON.stringify({
-      message: "Create HTML page via tool",
-      content: btoa(unescape(encodeURIComponent(html))),
-      sha: sha
-    })
-  });
+  async function upload(){
+    if(!telegramUserId){ return; }
 
-  const data = await res.json();
+    const html = document.getElementById("code").value.trim();
+    if(!html){ alert("HTML kodni yozing!"); return; }
 
-  if(data.content){
-    const link = `https://${OWNER}.github.io/${REPO}/${filename}`;
+    const filename = `${telegramUserId}/index.html`; // Papka nomi = Telegram ID
 
-    // Eski usul nusxalash
-    const outDiv = document.getElementById("out");
-    outDiv.innerHTML = `
-      ✅ LINK:<br>
-      <a href="${link}" target="_blank">${link}</a> <br>
-      <button id="copyBtn">Nusxalash</button>
-      <textarea id="tmpCopy" style="position:absolute; left:-9999px;">${link}</textarea>
-    `;
+    const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`;
 
-    const copyBtn = document.getElementById("copyBtn");
-    copyBtn.onclick = function(){
-      const tmp = document.getElementById("tmpCopy");
-      tmp.select();
-      tmp.setSelectionRange(0, 99999); // mobil uchun
-      document.execCommand("copy");
-      alert("Link nusxalandi!");
-    };
+    // Oldingi fayl bo‘lsa SHA olish
+    let sha = null;
+    const check = await fetch(api, { headers:{Authorization:"token " + TOKEN}});
+    if(check.ok){
+      const j = await check.json();
+      sha = j.sha;
+    }
 
-  }else{
-    document.getElementById("out").innerText =
-      "❌ Xatolik: " + JSON.stringify(data);
+    // Faylni yaratish yoki yangilash
+    const res = await fetch(api,{
+      method:"PUT",
+      headers:{
+        "Authorization":"token " + TOKEN,
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({
+        message: "Create HTML page via Telegram mini app",
+        content: btoa(unescape(encodeURIComponent(html))),
+        sha: sha
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.content){
+      const link = `https://${OWNER}.github.io/${REPO}/${telegramUserId}/index.html`;
+
+      // Nusxalash
+      const outDiv = document.getElementById("out");
+      outDiv.innerHTML = `
+        ✅ LINK:<br>
+        <a href="${link}" target="_blank">${link}</a> <br>
+        <button id="copyBtn">Nusxalash</button>
+        <textarea id="tmpCopy" style="position:absolute; left:-9999px;">${link}</textarea>
+      `;
+
+      document.getElementById("copyBtn").onclick = function(){
+        const tmp = document.getElementById("tmpCopy");
+        tmp.select();
+        tmp.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("Link nusxalandi!");
+      };
+
+    }else{
+      document.getElementById("out").innerText =
+        "❌ Xatolik: " + JSON.stringify(data);
+    }
   }
-}
 </script>
+
 </body>
 </html>
